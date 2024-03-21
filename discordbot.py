@@ -6,8 +6,11 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 # OpenAI Client setting
-openai_api_key = '####'  #OpenAI Api Key
+openai_api_key = '####'  # OpenAI Api Key
 openai_client = OpenAI(api_key=openai_api_key)
+
+# Dictionary to store recent messages of users
+recent_messages = {}
 
 @client.event
 async def on_ready():
@@ -35,6 +38,15 @@ async def on_message(message):
         
         # send Discord message
         await message.channel.send(f"{bot_response}")
+
+    elif text == '!help':
+        await message.channel.send("bot에게 명령을 하려면 '!bot + 명령'이라고 입력해보세요.")
+
+    # Store recent messages of users
+    user_id = str(message.author.id)
+    recent_messages.setdefault(user_id, []).append(message.content)
+    if len(recent_messages[user_id]) > 10:
+        recent_messages[user_id] = recent_messages[user_id][-10:]
 
 # Discord Bot Token
 DISCORD_BOT_TOKEN = '####'  # Input Discord Token
