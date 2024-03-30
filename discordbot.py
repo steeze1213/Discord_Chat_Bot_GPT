@@ -58,9 +58,10 @@ async def on_message(message):
         await message.channel.send(f"{bot_response}")
 
     elif text == '!help':
-        await message.channel.send("bot에게 명령을 하려면 '!bot + 명령'이라고 입력해보세요.")
+        await message.channel.send("-bot-에게 명령을 하려면 '!bot + 명령'이라고 입력해보세요.")
         await message.channel.send("'!game'을 입력하여 간단한 숫자 게임을 즐겨보세요.")
         await message.channel.send("'!timer + [초]'를 입력하여 타이머를 사용해보세요.")
+        await message.channel.send("'!clean'을 입력하여 -bot-의 메시지를 10개씩 삭제해보세요.")
     
     elif text == '!game':
         if str(message.author.id) not in game_sessions:
@@ -98,6 +99,10 @@ async def on_message(message):
         except (IndexError, ValueError):
             await message.channel.send("올바른 형식으로 시간을 입력해주세요: !timer [초]")
 
+    elif text == '!clean':
+        # Delete old messages
+        await clean_messages(message.channel)
+
     # Store recent messages of users
     user_id = str(message.author.id)
     recent_messages.setdefault(user_id, []).append(message.content)
@@ -107,6 +112,12 @@ async def on_message(message):
 async def timer_alert(channel, seconds):
     await asyncio.sleep(seconds)
     await channel.send("타이머가 종료되었습니다!")
+
+async def clean_messages(channel):
+    # Delete 10 messages sent
+    async for message in channel.history(limit=100):
+        if message.author == client.user:
+            await message.delete()
 
 # Discord Bot Token
 DISCORD_BOT_TOKEN = '####################'  # Input Discord Token
