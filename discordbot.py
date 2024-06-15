@@ -66,9 +66,9 @@ async def on_message(message):
         await message.channel.send("'!hangman'을 입력하여 행맨 게임을 즐겨보세요.")
         await message.channel.send("'!timer + [초]'를 입력하여 타이머를 사용해보세요.")
         await message.channel.send("'!clean'을 입력하여 -bot-의 메시지를 삭제해보세요.")
-        await message.channel.send("'!일정 추가 [일정]'을 입력하여 일정을 추가해보세요.")
-        await message.channel.send("'!일정 보기'을 입력하여 일정 목록을 확인해보세요.")
-        await message.channel.send("'!일정 삭제 [번호]'를 입력하여 일정을 삭제해보세요.")
+        await message.channel.send("'!schedule add [일정]'을 입력하여 일정을 추가해보세요.")
+        await message.channel.send("'!schedule check'을 입력하여 일정 목록을 확인해보세요.")
+        await message.channel.send("'!schedule del [번호]'를 입력하여 일정을 삭제해보세요.")
 
     elif text == '!numbergame':
         if str(message.author.id) not in game_sessions:
@@ -113,15 +113,15 @@ async def on_message(message):
     elif text == '!hangman':
         await play_hangman(message)
 
-    elif text.startswith('!일정 추가'):
+    elif text.startswith('!schedule add'):
         user = message.author.name
-        task = text[len('!일정 추가 '):]
+        task = text[len('!schedule add '):]
         if user not in todo_list:
             todo_list[user] = []
         todo_list[user].append(task)
         await message.channel.send(f"'{task}' 일정이 추가되었습니다.")
 
-    elif text.startswith('!일정 확인'):
+    elif text.startswith('!schedule check'):
         user = message.author.name
         if user in todo_list and todo_list[user]:
             tasks = "\n".join([f"{idx + 1}. {task}" for idx, task in enumerate(todo_list[user])])
@@ -129,17 +129,17 @@ async def on_message(message):
         else:
             await message.channel.send("일정 목록이 비어있습니다.")
 
-    elif text.startswith('!일정 삭제'):
+    elif text.startswith('!schedule del'):
         try:
             user = message.author.name
-            task_index = int(text[len('!일정 삭제 '):]) - 1
+            task_index = int(text[len('!schedule del '):]) - 1
             if user in todo_list and 0 <= task_index < len(todo_list[user]):
                 removed_task = todo_list[user].pop(task_index)
                 await message.channel.send(f"'{removed_task}' 일정이 삭제되었습니다.")
             else:
                 await message.channel.send("유효한 일정 번호를 입력해주세요.")
         except (ValueError, IndexError):
-            await message.channel.send("유효한 형식으로 입력해주세요: !일정 삭제 [번호]")
+            await message.channel.send("유효한 형식으로 입력해주세요: !schedule del [번호]")
 
 async def timer_alert(channel, seconds):
     await asyncio.sleep(seconds)
